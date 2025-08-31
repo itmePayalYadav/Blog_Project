@@ -139,24 +139,7 @@
             </ul>
 
             <!-- Search Form -->
-            <form
-              class="d-flex"
-              role="search"
-              method="GET"
-              action="{% url 'home' %}"
-            >
-              <input
-                class="form-control me-2"
-                type="search"
-                name="q"
-                placeholder="Search articles..."
-                aria-label="Search"
-                value="{{ request.GET.q|default:'' }}"
-              />
-              <button class="btn btn-light text-primary" type="submit">
-                <i class="bi bi-search"></i>
-              </button>
-            </form>
+            {% include 'pages/search.html' %}
           </div>
         </div>
       </nav>

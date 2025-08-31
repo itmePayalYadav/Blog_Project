@@ -1,0 +1,46 @@
+<form
+  class="d-flex align-items-center gap-2"
+  role="search"
+  method="GET"
+  action="{% url 'home' %}"
+>
+  <select
+    name="type"
+    class="form-select w-auto"
+    id="search-type"
+    hx-get="/search/"
+    hx-trigger="keyup changed delay:200ms"
+    hx-include="#search-query"
+    hx-target="#typeahed-results"
+  >
+    <span>{% if request.GET.type == 'article' %}</span>
+    <option value="article" selected>Articles</option>
+    {% else %}
+    <option value="article">Articles</option>
+    {% endif %}
+
+    <span> {% if request.GET.type == 'recipe' %}</span>
+    <option value="recipe" selected>Recipes</option>
+    {% else %}
+    <option value="recipe">Recipes</option>
+    {% endif %}
+  </select>
+
+  <input
+    class="form-control me-2"
+    type="search"
+    name="q"
+    id="search-query"
+    placeholder="Search articles..."
+    aria-label="Search"
+    value="{{ request.GET.q }}"
+    hx-get="/search/"
+    hx-trigger="keyup changed delay:200ms"
+    hx-include="#search-type"
+    hx-target="#typeahed-results"
+  />
+
+  <button class="btn btn-light text-primary" type="submit">
+    <i class="bi bi-search"></i>
+  </button>
+</form>

@@ -22,6 +22,14 @@ def recipe_create_view(request):
         obj = form.save(commit=False)
         obj.user = request.user
         obj.save()
+        if request.htmx:
+            headers = {
+                "HX-Push": 'recipe-list'
+            }
+            context = {
+                "object":obj
+            }
+            return render(request, "recipes/partials/detail.html", context)
         return redirect('recipe-list')
     return render(request, "recipes/create.html", context) 
 

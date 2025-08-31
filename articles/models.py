@@ -28,6 +28,10 @@ class Article(models.Model):
     publish = models.DateField(null=True, blank=True)
     
     objects = ArticleManager()
+    
+    @property
+    def name(self):
+        return self.title
 
     def save(self, *args, **kwargs):
         if not self.slug:  

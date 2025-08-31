@@ -8,17 +8,29 @@ class RecipeForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control', 
-                'placeholder': 'Enter the recipe name'
+                'placeholder': 'Enter the recipe name',
+                # 'hx-post':'.',
+                # 'hx-trigger':'keyup changed delay:500ms',
+                # 'hx-target':'#recipe-container',
+                # 'hx-swap':'outerHTML'
             }),
             'description': forms.Textarea(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Write a short description',
-                'rows': 3
+                'rows': 3,
+                # 'hx-post':'.',
+                # 'hx-trigger':'keyup changed delay:500ms',
+                # 'hx-target':'#recipe-container',
+                # 'hx-swap':'outerHTML'
             }),
             'directions': forms.Textarea(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Step-by-step cooking instructions',
-                'rows': 5
+                'rows': 5,
+                # 'hx-post':'.',
+                # 'hx-trigger':'keyup changed delay:500ms',
+                # 'hx-target':'#recipe-container',
+                # 'hx-swap':'outerHTML'
             }),
         }
 
@@ -40,4 +52,3 @@ class RecipeIngredientForm(forms.ModelForm):
                 'placeholder': 'Enter unit (e.g. grams, cups)'
             }),
         }
-    

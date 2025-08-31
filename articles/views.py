@@ -3,6 +3,7 @@ from articles.models import Article
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 
+@login_required
 def articles_detail_view(request, slug):
     if slug is not None:
         article_obj = get_object_or_404(Article, slug=slug) 
@@ -40,3 +41,4 @@ def articles_update_view(request, id):
         form.save()
         return redirect('home')
     return render(request, "articles/update.html", context) 
+

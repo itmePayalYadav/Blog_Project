@@ -1,10 +1,29 @@
 import pint
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils.text import slugify
 from .utils import number_str_to_float
 from django.contrib.auth.models import User
 from .validators import validate_unit_of_measure
+
+class RecipeQuerySet(models.QuerySet):
+    def search(self, query=None):
+        if query is None or query == "":
+            return self.none()
+        lookups = (
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(directions__icontains=query)
+        )
+        return self.filter(lookups)
+
+class RecipeManager(models.Manager):
+    def get_queryset(self):
+        return RecipeQuerySet(self.model, using=self._db)
+    
+    def search(self, query=None):
+        return self.get_queryset().search(query=query)
 
 class Recipe(models.Model):
     user = models.ForeignKey(
@@ -20,6 +39,12 @@ class Recipe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
+    
+    objects = RecipeManager()
+    
+    @property
+    def title(self):
+        return self.name
 
     def __str__(self):
         return self.name
