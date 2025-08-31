@@ -18,13 +18,25 @@
         <!-- Body -->
         <div class="card-body p-4">
           {% include 'recipes/partials/forms.html' %}
-
-          <!-- Show existing ingredients -->
-          <h5 class="mt-4">Current Ingredients</h5>
-          {% for ingredient in object.ingredients.all %} {% include
-          "recipes/partials/ingredient-inline.html" with object=ingredient %} {%
-          empty %}
-          <p class="text-muted">No ingredients added yet.</p>
+          <hr />
+          <span>{% if new_recipe_url %}</span>
+          <div id="ingredient-create">
+            <button
+              hx-get="{{ new_recipe_url }}"
+              hx-trigger="click"
+              hx-target="#ingredient-create"
+              hx-swap="beforeend"
+              class="btn btn-success"
+            >
+              Add Ingredient
+            </button>
+          </div>
+          <span>{% endif %}</span>
+          <hr />
+          {% for ingredient in object.get_ingredients_children %}
+          <span>{% with obj=ingredient %}</span>
+          <span>{% include 'recipes/partials/ingredient-inline.html' %}</span>
+          <span>{% endwith %}</span>
           {% endfor %}
         </div>
       </div>

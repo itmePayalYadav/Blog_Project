@@ -29,32 +29,31 @@ def recipe_create_view(request):
 def recipe_detail_view(request, slug):
     hx_url = reverse("recipe-detail", kwargs={"slug": slug})
     context = {
-        "hx_url":hx_url
+        "hx_url": hx_url,
     }
     return render(request, "recipes/detail.html", context) 
 
 @login_required
 def recipe_detail_hx_view(request, slug):
-    if not request.htmx:
-        return Http404
     try:
         obj = Recipe.objects.get(slug=slug, user=request.user)
     except:
-        obj = None  
+        obj = None
     if obj is None:
-        return HttpResponse("Not Found.")
-    context = {
-        "object":obj
-    }
-    return render(request, "recipes/partials/detail.html", context) 
+        return HttpResponse("Not Found")
+    context = {'object': obj}
+    return render(request, "recipes/partials/detail.html", context)
 
 @login_required
 def recipe_update_view(request, id=None):
     obj = get_object_or_404(Recipe, id=id, user=request.user)
     form = RecipeForm(request.POST or None, instance=obj)
+    kwargs = {'slug': obj.slug}
+    new_recipe_url = reverse('recipe-update-new-hx', kwargs=kwargs)
     context = {
         "form": form,
         "object": obj,
+        "new_recipe_url":new_recipe_url
     }
     if form.is_valid():
         form.save()
@@ -63,31 +62,41 @@ def recipe_update_view(request, id=None):
     return render(request, "recipes/update.html", context)
 
 @login_required
-def recipe_ingredient_update_hx_view(request, slug, id=None):
+def recipe_update_hx_view(request, slug, id=None):
     if not request.htmx:
         raise Http404
-    
-    parent_obj = get_object_or_404(Recipe, slug=slug, user=request.user)
 
-    instance = None
+    try:
+        parent_obj = Recipe.objects.get(slug=slug, user=request.user)
+    except Recipe.DoesNotExist:
+        return HttpResponse("Not Found")
+
+    child_obj = None
     if id is not None:
-        instance = get_object_or_404(RecipeIngredient, recipe=parent_obj, id=id)
+        try:
+            child_obj = RecipeIngredient.objects.get(recipe=parent_obj, id=id)
+        except RecipeIngredient.DoesNotExist:
+            child_obj = None  
 
-    form = RecipeIngredientForm(request.POST or None, instance=instance)
+    form = RecipeIngredientForm(request.POST or None, instance=child_obj)
 
-    if instance:
-        url = instance.get_edit_url()  
-    else:
-        url = reverse("recipe-ingredient-update-hx", kwargs={"slug": slug, "id": 0})  
+    kwargs = {'slug': parent_obj.slug}
+    url = reverse('recipe-update-new-hx', kwargs=kwargs)
+    if child_obj:
+        url = child_obj.get_hx_edit_url()
 
-    context = {"form": form, "object": instance, "url": url}
+    context = {
+        'object': child_obj,
+        'form': form,
+        'url': url
+    }
 
     if form.is_valid():
-        new_obj = form.save(commit=False)
-        if instance is None:  
-            new_obj.recipe = parent_obj
-        new_obj.save()
-        context["object"] = new_obj
+        obj = form.save(commit=False)
+        print(obj)
+        if child_obj is None: 
+            obj.recipe = parent_obj
+        obj.save()
+        context['object'] = obj
         return render(request, "recipes/partials/ingredient-inline.html", context)
-
     return render(request, "recipes/partials/ingredient-form.html", context)

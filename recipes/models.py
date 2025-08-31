@@ -25,11 +25,7 @@ class Recipe(models.Model):
         return self.name
     
     def get_ingredients_children(self):
-        print(self.ingredients.all())
         return self.ingredients.all() 
-    
-    def get_hx_url(self):
-        return reverse("recipe-detail", kwargs={"slug": self.slug})
     
     def save(self, *args, **kwargs):
         if not self.slug:  
@@ -55,11 +51,8 @@ class RecipeIngredient(models.Model):
         return f"{self.name} ({self.quantity} {self.unit})"
     
     def get_hx_edit_url(self):
-        kwargs={
-            "slug": self.recipe.slug,
-            "id": self.id,
-        }
-        return reverse("recipe-ingredient-update-hx", kwargs=kwargs)
+        kwargs={"slug": self.recipe.slug, "id": self.id}
+        return reverse('recipe-update-hx', kwargs=kwargs)
     
     def convert_to_system(self, system="mks"):
         if self.quantity_as_float is None:
